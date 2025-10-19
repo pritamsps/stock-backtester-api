@@ -5,22 +5,16 @@ import pandas as pd
 app = Flask(__name__)
 
 def run_backtest(ticker):
-    """
-    This function will contain all your backtesting logic.
-    It takes a ticker, runs the simulation, and returns the results.
-    """
-    # --- Step 1: Fetch Data ---
+    
     stock = yf.Ticker(ticker)
     historical_data = stock.history(period="5y", interval="1d")
 
     if historical_data.empty:
         return {"error": f"Could not fetch data for ticker {ticker}"}
 
-    # --- Step 2: Calculate SMAs ---
     historical_data['SMA50'] = historical_data['Close'].rolling(window=50).mean()
     historical_data['SMA200'] = historical_data['Close'].rolling(window=200).mean()
 
-    # --- Step 3: Run Trading Simulation ---
     position = 0 
     trades = []
     for i in range(200, len(historical_data)):
@@ -31,7 +25,6 @@ def run_backtest(ticker):
             position = 0
             trades.append({'action': 'SELL', 'date': historical_data.index[i], 'price': historical_data['Close'][i]})
 
-    # --- Step 4: Calculate Performance ---
     initial_capital = 10000.00
     cash = initial_capital
     shares = 0
@@ -53,7 +46,6 @@ def run_backtest(ticker):
     profit = final_portfolio_value - initial_capital
     return_percentage = (profit / initial_capital) * 100
 
-    # --- Step 5: Return results as a dictionary ---
     return {
         "ticker": ticker,
         "initial_capital": initial_capital,
@@ -65,13 +57,10 @@ def run_backtest(ticker):
 
 @app.route("/backtest", methods=['POST'])
 def backtest_endpoint():
-    # Get the ticker from the incoming JSON request
     ticker = request.json['ticker']
     
-    # Run the backtest
     results = run_backtest(ticker)
     
-    # Return the results as a JSON response
     return jsonify(results)
 
 
