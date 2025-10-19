@@ -25,12 +25,10 @@ if __name__ == "__main__":
     position = 0 
     trades = []
 
-    # Loop through the data, starting from the 200th day since we need SMA200 data
     for i in range(200, len(historical_data)):
-        # Check for a Buy Signal (Golden Cross)
-        # Is the SMA50 crossing above the SMA200?
+     
         if historical_data['SMA50'][i] > historical_data['SMA200'][i] and historical_data['SMA50'][i-1] < historical_data['SMA200'][i-1] and position == 0:
-            position = 1 # We are now "in" the market
+            position = 1 
             buy_price = historical_data['Close'][i]
             buy_date = historical_data.index[i]
             trades.append({'action': 'BUY', 'date': buy_date, 'price': buy_price})
